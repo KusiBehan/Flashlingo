@@ -2,6 +2,7 @@ package com.example.flashlingo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
@@ -11,6 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +32,16 @@ public class LernsetAuswahlActivity extends AppCompatActivity {
         hashmap.forEach((key, value) -> {
             Button button = new Button(this);
             button.setText(key);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent learningIntent = new Intent(LernsetAuswahlActivity.this,LearningActivity.class);
+                    learningIntent.putExtra("learnsetName", key);
+                    learningIntent.putExtra("learnsetCards", (Serializable) value);
+                    startActivity(learningIntent);
+                }
+            });
+
             ll.addView(button);
         });
 
