@@ -19,10 +19,18 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         Button createLernSetBtn = findViewById(R.id.CreateLearnSetBtn);
+        Button learnBtn = findViewById(R.id.LearnBtn);
         createLernSetBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, CreateLearnSet.class);
+                startActivity(intent);
+            }
+        });
+        learnBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LernsetAuswahlActivity.class);
                 startActivity(intent);
             }
         });

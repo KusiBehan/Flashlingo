@@ -12,30 +12,26 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GenerateCardsActivity extends AppCompatActivity {
 
-    public class Card {
-        String cardDefinition;
-        String cardWord;
-
-        public Card(String cardWord, String cardDefinition) {
-            this.cardWord = cardWord;
-            this.cardDefinition = cardDefinition;
-        }
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_generate_cards);
-        HashMap<String,Card> lernset = new HashMap<String,Card>();
 
+        HashMap<String,ArrayList<Card>> lernset = new HashMap<>();
         String LernsetName = getIntent().getStringExtra("lernsetName");
         Button createCardsBtn = findViewById(R.id.addBtn);
+        Button doneBtn = findViewById(R.id.DoneBtn);
+        ArrayList <Card> cardList = new ArrayList<>();
 
         createCardsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +41,20 @@ public class GenerateCardsActivity extends AppCompatActivity {
                 String begriff = begriffEdt.getText().toString();
                 String definition = definitionEdt.getText().toString();
                 Card card = new Card(begriff,definition);
-                lernset.put(LernsetName,card);
+                cardList.add(card);
+            }
+        });
+
+        doneBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lernset.put(LernsetName,cardList);
+                Intent Lernsetintent = new Intent(GenerateCardsActivity.this, LernsetAuswahlActivity.class);
+                Lernsetintent.putExtra("lernset", lernset);
+                startActivity(Lernsetintent);
+
+              //  Intent MainActivityIntent= new Intent(GenerateCardsActivity.this, LernsetAuswahlActivity.class);
+
             }
         });
 
