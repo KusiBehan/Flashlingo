@@ -13,6 +13,12 @@
         android:theme="@style/Theme.Flashlingo"
         tools:targetApi="31">
         <activity
+            android:name=".GenerateCardsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CreateLearnSet"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
