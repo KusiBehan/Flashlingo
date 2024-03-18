@@ -52,6 +52,8 @@ public class GenerateCardsActivity extends AppCompatActivity {
                 Intent Lernsetintent = new Intent(GenerateCardsActivity.this, LernsetAuswahlActivity.class);
                 Lernsetintent.putExtra("lernset", lernset);
                 startActivity(Lernsetintent);
+                Intent mainMenu = new Intent(GenerateCardsActivity.this, MainActivity.class);
+                startActivity(mainMenu);
             }
         });
 
