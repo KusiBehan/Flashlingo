@@ -1,5 +1,6 @@
 package com.example.flashlingo;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,8 +14,10 @@ import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,7 +40,7 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
 
     private static final float SHAKE_THRESHOLD = 8.0f;
 
-    // Time interval between two shake events
+    Dialog dialog;
     private static final int SHAKE_INTERVAL_TIME = 500;
 
     private long lastShakeTime = 0;
@@ -78,15 +81,10 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_learning);
 
-
         sensorMgr = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor accelerometer = sensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (accelerometer != null){
             sensorMgr.registerListener(this,accelerometer,SensorManager.SENSOR_DELAY_GAME);
-        }
-        else
-        {
-            //
         }
 
         Intent intent = getIntent();
@@ -97,8 +95,6 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
         if (loadedCardList != null) {
             cardlist = loadedCardList;
         }
-
-
 
         TextView card = findViewById(R.id.CardText);
         Button falseBtn = findViewById(R.id.FalseBtn);
@@ -129,6 +125,15 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
                         vibrator.vibrate(500);
                     }
                     calculateResult(finalCardlist);
+                    dialog.show();
+                    TextView dialogText = (TextView) dialog.findViewById(R.id.ResultTextView);
+                    if (falsePercentage > rightPercantage){
+                        dialogText.setText("Ich würde nochmals lernen " + falsePercentage.toString() + " der Karten sind falsch");
+                    }
+                    else
+                    {
+                        dialogText.setText("Nicht schlecht nur " + falsePercentage.toString() + " der Karten sind falsch");
+                    }
                 }
             }
         });
@@ -150,6 +155,15 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
                         vibrator.vibrate(500);
                     }
                     calculateResult(finalCardlist1);
+                    TextView dialogText = (TextView) dialog.findViewById(R.id.ResultTextView);
+                    if (falsePercentage > rightPercantage){
+                        dialogText.setText("Ich würde nochmals lernen " + falsePercentage.toString() + " der Karten sind falsch");
+                    }
+                    else
+                    {
+                        dialogText.setText("Nicht schlecht nur " + falsePercentage.toString() + " der Karten sind falsch");
+                    }
+                    dialog.show();
                 }
             }
         });
@@ -170,6 +184,29 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
                 }
             });
         }
+
+        dialog = new Dialog(this);
+        dialog.setContentView(R.layout.layout_custom_dialog);
+
+        Button Okay = dialog.findViewById(R.id.btn_okay);
+        Button Cancel = dialog.findViewById(R.id.btn_cancel);
+
+        Okay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        Cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.setCancelable(false); //Optional
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
