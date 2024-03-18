@@ -3,7 +3,7 @@ package com.example.flashlingo;
 
 import java.io.Serializable;
 
-public class Card implements Serializable{
+public class Card implements Serializable {
     String cardDefinition;
     String cardWord;
 
