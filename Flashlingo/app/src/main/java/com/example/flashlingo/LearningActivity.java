@@ -2,6 +2,7 @@ package com.example.flashlingo;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -21,7 +22,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -44,11 +49,27 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
     Float rightPercantage;
 
     public void calculateResult(ArrayList<Card> cards) {
-        HashMap<String, Float> result = new HashMap<>();
         Integer cardSize = cards.size();
         Float cardSizePercentage = 100F;
         falsePercentage = (cardSizePercentage / cardSize * falseCounter);
         rightPercantage = 100F - falsePercentage;
+    }
+
+    private void saveCardList(ArrayList<Card> cardList) {
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(cardList);
+        editor.putString("cardList", json);
+        editor.apply();
+    }
+
+    private ArrayList<Card> loadCardList() {
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("cardList", null);
+        Type type = new TypeToken<ArrayList<Card>>() {}.getType();
+        return gson.fromJson(json, type);
     }
 
     @Override
@@ -56,6 +77,7 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_learning);
+
 
         sensorMgr = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor accelerometer = sensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -69,6 +91,15 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
 
         Intent intent = getIntent();
         ArrayList<Card> cardlist = (ArrayList<Card>) intent.getSerializableExtra("learnsetCards");
+        saveCardList(cardlist);
+        ArrayList<Card> loadedCardList = loadCardList();
+
+        if (loadedCardList != null) {
+            cardlist = loadedCardList;
+        }
+
+
+
         TextView card = findViewById(R.id.CardText);
         Button falseBtn = findViewById(R.id.FalseBtn);
         Button rightBtn = findViewById(R.id.RightBtn);
@@ -78,6 +109,7 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
+        ArrayList<Card> finalCardlist = cardlist;
         falseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,8 +118,8 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
                 }
 
                 currentIndex[0]++;
-                if (currentIndex[0] < cardlist.size()) {
-                    Card nextCard = cardlist.get(currentIndex[0]);
+                if (currentIndex[0] < finalCardlist.size()) {
+                    Card nextCard = finalCardlist.get(currentIndex[0]);
                     card.setText(nextCard.cardWord);
                 } else {
                     if (Build.VERSION.SDK_INT >= 26){
@@ -96,18 +128,19 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
                     else {
                         vibrator.vibrate(500);
                     }
-                    calculateResult(cardlist);
+                    calculateResult(finalCardlist);
                 }
             }
         });
 
+        ArrayList<Card> finalCardlist1 = cardlist;
         rightBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 currentIndex[0]++;
-                if (currentIndex[0] < cardlist.size()) {
-                    Card nextCard = cardlist.get(currentIndex[0]);
+                if (currentIndex[0] < finalCardlist1.size()) {
+                    Card nextCard = finalCardlist1.get(currentIndex[0]);
                     card.setText(nextCard.cardWord);
                 } else {
                     if (Build.VERSION.SDK_INT >= 26){
@@ -116,7 +149,7 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
                     else {
                         vibrator.vibrate(500);
                     }
-                    calculateResult(cardlist);
+                    calculateResult(finalCardlist1);
                 }
             }
         });
