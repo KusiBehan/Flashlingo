@@ -41,7 +41,7 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
     private static final float SHAKE_THRESHOLD = 8.0f;
 
     Dialog dialog;
-    private static final int SHAKE_INTERVAL_TIME = 500;
+    private static final int SHAKE_INTERVAL_TIME = 3000;
 
     private long lastShakeTime = 0;
 
@@ -109,10 +109,9 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
         falseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!(card.getText().toString().isEmpty())) {
-                    falseCounter += 1;
+                if (!card.getText().toString().isEmpty() && !(falseCounter > finalCardlist.size())) {
+                    falseCounter ++;
                 }
-
                 currentIndex[0]++;
                 if (currentIndex[0] < finalCardlist.size()) {
                     Card nextCard = finalCardlist.get(currentIndex[0]);
@@ -128,11 +127,11 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
                     dialog.show();
                     TextView dialogText = (TextView) dialog.findViewById(R.id.ResultTextView);
                     if (falsePercentage > rightPercantage){
-                        dialogText.setText("Ich würde nochmals lernen " + falsePercentage.toString() + " der Karten sind falsch");
+                        dialogText.setText("Ich würde nochmals lernen " + falsePercentage.toString() + "% der Karten sind falsch");
                     }
                     else
                     {
-                        dialogText.setText("Nicht schlecht nur " + falsePercentage.toString() + " der Karten sind falsch");
+                        dialogText.setText("Nicht schlecht nur " + falsePercentage.toString() + "% der Karten sind falsch");
                     }
                 }
             }
@@ -242,14 +241,11 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
 
             if (acceleration > SHAKE_THRESHOLD && System.currentTimeMillis() - lastShakeTime > SHAKE_INTERVAL_TIME) {
                 if (x > 2.0f) {
-                    TextView view = findViewById(R.id.CardText);
-                    view.setText("left");
+                    Button falseBtn = findViewById(R.id.FalseBtn);
+                    falseBtn.performClick();
                 } else if (x < -2.0f) {
-                    TextView view = findViewById(R.id.CardText);
-                    view.setText("right");
-                } else {
-                    TextView view = findViewById(R.id.CardText);
-                    view.setText("center");
+                    Button rightBtn = findViewById(R.id.RightBtn);
+                    rightBtn.performClick();
                 }
                 lastShakeTime = System.currentTimeMillis();
             }
