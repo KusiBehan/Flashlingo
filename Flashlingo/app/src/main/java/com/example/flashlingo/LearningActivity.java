@@ -19,16 +19,15 @@ import java.util.HashMap;
 public class LearningActivity extends AppCompatActivity {
 
     Integer falseCounter = 0;
+    Float falsePercentage;
+    Float rightPercantage;
 
-    public HashMap<String, Float> calculateResult(ArrayList<Card> cards) {
+    public void calculateResult(ArrayList<Card> cards) {
         HashMap<String, Float> result = new HashMap<>();
         Integer cardSize = cards.size();
         Float cardSizePercentage = 100F;
-        Float falsePercentage = (cardSizePercentage / cardSize * falseCounter);
-        Float rightPercentage = 100F - falsePercentage;
-        result.put("right", rightPercentage);
-        result.put("false", falsePercentage);
-        return result;
+        falsePercentage = (cardSizePercentage / cardSize * falseCounter);
+        rightPercantage = 100F - falsePercentage;
     }
 
     @Override
@@ -42,26 +41,56 @@ public class LearningActivity extends AppCompatActivity {
         Button falseBtn = findViewById(R.id.FalseBtn);
         Button rightBtn = findViewById(R.id.RightBtn);
 
+        int[] currentIndex = {0};
 
-        cardlist.forEach((n) -> {
-            card.setText(n.cardWord);
-
-            falseBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!(card.getText().toString().isEmpty())) {
-                        falseCounter += 1;
-                        return;
-                    }
+        falseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!(card.getText().toString().isEmpty())) {
+                    falseCounter += 1;
                 }
-            });
+
+                currentIndex[0]++;
+                if (currentIndex[0] < cardlist.size()) {
+                    Card nextCard = cardlist.get(currentIndex[0]);
+                    card.setText(nextCard.cardWord);
+                } else {
+                    calculateResult(cardlist);
+                }
+            }
+        });
+
+        rightBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                currentIndex[0]++;
+                if (currentIndex[0] < cardlist.size()) {
+                    Card nextCard = cardlist.get(currentIndex[0]);
+                    card.setText(nextCard.cardWord);
+                } else {
+                    calculateResult(cardlist);
+                }
+            }
+        });
+
+        for (Card cardElem : cardlist) {
+
+            card.setText(cardElem.cardWord);
+
+
             card.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    card.setText(n.cardDefinition);
+                    if (!(card.getText().toString() == cardElem.cardWord)){
+                        card.setText(cardElem.cardDefinition);
+                    }
                 }
             });
-        });
+
+
+        }
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());

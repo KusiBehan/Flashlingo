@@ -1,6 +1,7 @@
 package com.example.flashlingo;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +13,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.gson.Gson;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,18 +23,16 @@ import java.util.Map;
 
 public class GenerateCardsActivity extends AppCompatActivity {
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_generate_cards);
-
-        HashMap<String,ArrayList<Card>> lernset = new HashMap<>();
+        HashMap<String, ArrayList<Card>> lernset = new HashMap<>();
         String LernsetName = getIntent().getStringExtra("lernsetName");
         Button createCardsBtn = findViewById(R.id.addBtn);
         Button doneBtn = findViewById(R.id.DoneBtn);
-        ArrayList <Card> cardList = new ArrayList<>();
+        ArrayList<Card> cardList = new ArrayList<>();
 
         createCardsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,7 +41,7 @@ public class GenerateCardsActivity extends AppCompatActivity {
                 EditText definitionEdt = findViewById(R.id.definitionEditText);
                 String begriff = begriffEdt.getText().toString();
                 String definition = definitionEdt.getText().toString();
-                Card card = new Card(begriff,definition);
+                Card card = new Card(begriff, definition);
                 cardList.add(card);
             }
         });
@@ -49,9 +50,7 @@ public class GenerateCardsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 lernset.put(LernsetName,cardList);
-                Intent Lernsetintent = new Intent(GenerateCardsActivity.this, LernsetAuswahlActivity.class);
-                Lernsetintent.putExtra("lernset", lernset);
-                startActivity(Lernsetintent);
+                Lernset.getInstance().setLernset(lernset);
                 Intent mainMenu = new Intent(GenerateCardsActivity.this, MainActivity.class);
                 startActivity(mainMenu);
             }

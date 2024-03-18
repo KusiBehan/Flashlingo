@@ -12,6 +12,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.gson.Gson;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,10 +28,9 @@ public class LernsetAuswahlActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lernset_auswahl);
         LinearLayout ll = (LinearLayout) findViewById(R.id.BtnLayout);
 
-        Intent intent = getIntent();
-        HashMap<String, List<Card>> hashmap = (HashMap<String, List<Card>>) getIntent().getSerializableExtra("lernset");
+        HashMap<String, ArrayList<Card>> lernset = Lernset.getInstance().getLernset();
 
-        hashmap.forEach((key, value) -> {
+        lernset.forEach((key,value) -> {
             Button button = new Button(this);
             button.setText(key);
             button.setOnClickListener(new View.OnClickListener() {
@@ -41,7 +42,6 @@ public class LernsetAuswahlActivity extends AppCompatActivity {
                     startActivity(learningIntent);
                 }
             });
-
             ll.addView(button);
         });
 
