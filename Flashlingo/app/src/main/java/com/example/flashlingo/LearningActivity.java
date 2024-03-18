@@ -11,10 +11,13 @@ import android.hardware.SensorListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +30,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
@@ -41,10 +46,9 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
     private static final float SHAKE_THRESHOLD = 8.0f;
 
     Dialog dialog;
-    private static final int SHAKE_INTERVAL_TIME = 3000;
+    private static final int SHAKE_INTERVAL_TIME = 2000;
 
     private long lastShakeTime = 0;
-
 
 
     Integer falseCounter = 0;
@@ -71,7 +75,8 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString("cardList", null);
-        Type type = new TypeToken<ArrayList<Card>>() {}.getType();
+        Type type = new TypeToken<ArrayList<Card>>() {
+        }.getType();
         return gson.fromJson(json, type);
     }
 
@@ -83,8 +88,8 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
 
         sensorMgr = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor accelerometer = sensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        if (accelerometer != null){
-            sensorMgr.registerListener(this,accelerometer,SensorManager.SENSOR_DELAY_GAME);
+        if (accelerometer != null) {
+            sensorMgr.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
         }
 
         Intent intent = getIntent();
@@ -110,27 +115,24 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
             @Override
             public void onClick(View v) {
                 if (!card.getText().toString().isEmpty() && !(falseCounter > finalCardlist.size())) {
-                    falseCounter ++;
+                    falseCounter++;
                 }
                 currentIndex[0]++;
                 if (currentIndex[0] < finalCardlist.size()) {
                     Card nextCard = finalCardlist.get(currentIndex[0]);
                     card.setText(nextCard.cardWord);
                 } else {
-                    if (Build.VERSION.SDK_INT >= 26){
-                        vibrator.vibrate(VibrationEffect.createOneShot(500,VibrationEffect.DEFAULT_AMPLITUDE));
-                    }
-                    else {
+                    if (Build.VERSION.SDK_INT >= 26) {
+                        vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
                         vibrator.vibrate(500);
                     }
                     calculateResult(finalCardlist);
                     dialog.show();
                     TextView dialogText = (TextView) dialog.findViewById(R.id.ResultTextView);
-                    if (falsePercentage > rightPercantage){
+                    if (falsePercentage > rightPercantage) {
                         dialogText.setText("Ich würde nochmals lernen " + falsePercentage.toString() + "% der Karten sind falsch");
-                    }
-                    else
-                    {
+                    } else {
                         dialogText.setText("Nicht schlecht nur " + falsePercentage.toString() + "% der Karten sind falsch");
                     }
                 }
@@ -147,19 +149,16 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
                     Card nextCard = finalCardlist1.get(currentIndex[0]);
                     card.setText(nextCard.cardWord);
                 } else {
-                    if (Build.VERSION.SDK_INT >= 26){
-                        vibrator.vibrate(VibrationEffect.createOneShot(500,VibrationEffect.DEFAULT_AMPLITUDE));
-                    }
-                    else {
+                    if (Build.VERSION.SDK_INT >= 26) {
+                        vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                    } else {
                         vibrator.vibrate(500);
                     }
                     calculateResult(finalCardlist1);
                     TextView dialogText = (TextView) dialog.findViewById(R.id.ResultTextView);
-                    if (falsePercentage > rightPercantage){
+                    if (falsePercentage > rightPercantage) {
                         dialogText.setText("Ich würde nochmals lernen " + falsePercentage.toString() + " der Karten sind falsch");
-                    }
-                    else
-                    {
+                    } else {
                         dialogText.setText("Nicht schlecht nur " + falsePercentage.toString() + " der Karten sind falsch");
                     }
                     dialog.show();
@@ -174,10 +173,9 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
             card.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (card.getText().toString().equals(cardElem.cardWord)){
+                    if (card.getText().toString().equals(cardElem.cardWord)) {
                         card.setText(cardElem.cardDefinition);
-                    }
-                    else {
+                    } else {
                         card.setText(cardElem.cardWord);
                     }
                 }
@@ -215,7 +213,7 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         if (accelerometer != null) {
             sensorMgr.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
@@ -223,34 +221,68 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
     }
 
     @Override
-    protected void onPause(){
+    protected void onPause() {
         super.onPause();
         sensorMgr.unregisterListener(this);
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-
             float x = event.values[0];
             float y = event.values[1];
             float z = event.values[2];
 
             float acceleration = (float) Math.sqrt(x * x + y * y + z * z);
 
-            if (acceleration > SHAKE_THRESHOLD && System.currentTimeMillis() - lastShakeTime > SHAKE_INTERVAL_TIME) {
-                if (x > 2.0f) {
-                    Button falseBtn = findViewById(R.id.FalseBtn);
-                    falseBtn.performClick();
-                } else if (x < -2.0f) {
-                    Button rightBtn = findViewById(R.id.RightBtn);
-                    rightBtn.performClick();
+            long currentTime = System.currentTimeMillis();
+
+            if (acceleration > SHAKE_THRESHOLD && currentTime - lastShakeTime > SHAKE_INTERVAL_TIME) {
+                lastShakeTime = currentTime;
+
+                if (x > 4.0f) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Button rightBtn = findViewById(R.id.RightBtn);
+                            rightBtn.performClick();
+                        }
+                    });
+                } else if (x < -4.0f) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Button falseBtn = findViewById(R.id.FalseBtn);
+                            falseBtn.performClick();
+                        }
+                    });
                 }
-                lastShakeTime = System.currentTimeMillis();
             }
         }
     }
+
+
+    private void returnTextViewPosition(TextView textView) {
+        Animation animation = new TranslateAnimation(0, 0, 0, 0);
+        animation.setDuration(0);
+        animation.setFillAfter(true);
+        textView.startAnimation(animation);
+    }
+
+    private void animateTextViewToLeft(TextView textView) {
+        Animation animation = new TranslateAnimation(0, -1000, 0, 0);
+        animation.setDuration(1000);
+        animation.setFillAfter(true);
+        textView.startAnimation(animation);
+    }
+
+    private void animateTextViewToRight(TextView textView) {
+        Animation animation = new TranslateAnimation(0, 1000, 0, 0);
+        animation.setDuration(1000);
+        animation.setFillAfter(true);
+        textView.startAnimation(animation);
+    }
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
