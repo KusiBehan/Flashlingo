@@ -78,19 +78,18 @@ public class LearningActivity extends AppCompatActivity {
 
             card.setText(cardElem.cardWord);
 
-
             card.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!(card.getText().toString() == cardElem.cardWord)){
+                    if (card.getText().toString().equals(cardElem.cardWord)){
                         card.setText(cardElem.cardDefinition);
+                    }
+                    else {
+                        card.setText(cardElem.cardWord);
                     }
                 }
             });
-
-
         }
-
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
