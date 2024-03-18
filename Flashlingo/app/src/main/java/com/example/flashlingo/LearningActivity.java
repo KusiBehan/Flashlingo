@@ -1,7 +1,11 @@
 package com.example.flashlingo;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -41,7 +45,10 @@ public class LearningActivity extends AppCompatActivity {
         Button falseBtn = findViewById(R.id.FalseBtn);
         Button rightBtn = findViewById(R.id.RightBtn);
 
+        Vibrator vibrator;
         int[] currentIndex = {0};
+
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         falseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,6 +62,12 @@ public class LearningActivity extends AppCompatActivity {
                     Card nextCard = cardlist.get(currentIndex[0]);
                     card.setText(nextCard.cardWord);
                 } else {
+                    if (Build.VERSION.SDK_INT >= 26){
+                        vibrator.vibrate(VibrationEffect.createOneShot(500,VibrationEffect.DEFAULT_AMPLITUDE));
+                    }
+                    else {
+                        vibrator.vibrate(500);
+                    }
                     calculateResult(cardlist);
                 }
             }
@@ -69,6 +82,12 @@ public class LearningActivity extends AppCompatActivity {
                     Card nextCard = cardlist.get(currentIndex[0]);
                     card.setText(nextCard.cardWord);
                 } else {
+                    if (Build.VERSION.SDK_INT >= 26){
+                        vibrator.vibrate(VibrationEffect.createOneShot(500,VibrationEffect.DEFAULT_AMPLITUDE));
+                    }
+                    else {
+                        vibrator.vibrate(500);
+                    }
                     calculateResult(cardlist);
                 }
             }
