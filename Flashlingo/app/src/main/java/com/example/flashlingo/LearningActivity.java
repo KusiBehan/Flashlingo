@@ -244,16 +244,20 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Button rightBtn = findViewById(R.id.RightBtn);
-                            rightBtn.performClick();
+                            TextView cardText = findViewById(R.id.CardText);
+                            animateTextViewToLeft(cardText);
+                            Button falseBtn = findViewById(R.id.FalseBtn);
+                            falseBtn.performClick();
                         }
                     });
                 } else if (x < -4.0f) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Button falseBtn = findViewById(R.id.FalseBtn);
-                            falseBtn.performClick();
+                            TextView cardText = findViewById(R.id.CardText);
+                            animateTextViewToRight(cardText);
+                            Button rightBtn = findViewById(R.id.RightBtn);
+                            rightBtn.performClick();
                         }
                     });
                 }
@@ -262,26 +266,55 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
     }
 
 
-    private void returnTextViewPosition(TextView textView) {
-        Animation animation = new TranslateAnimation(0, 0, 0, 0);
-        animation.setDuration(0);
-        animation.setFillAfter(true);
-        textView.startAnimation(animation);
-    }
+    private void animateTextViewToLeft(final TextView textView) {
+        final int originalTranslationX = 0; // Store the original translationX value
 
-    private void animateTextViewToLeft(TextView textView) {
         Animation animation = new TranslateAnimation(0, -1000, 0, 0);
         animation.setDuration(1000);
         animation.setFillAfter(true);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                textView.setVisibility(View.VISIBLE);
+                textView.clearAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
         textView.startAnimation(animation);
     }
 
-    private void animateTextViewToRight(TextView textView) {
+
+    private void animateTextViewToRight(final TextView textView) {
+        final int originalTranslationX = 0; // Store the original translationX value
+
         Animation animation = new TranslateAnimation(0, 1000, 0, 0);
         animation.setDuration(1000);
         animation.setFillAfter(true);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                textView.setVisibility(View.VISIBLE);
+                textView.clearAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
         textView.startAnimation(animation);
     }
+
 
 
     @Override
