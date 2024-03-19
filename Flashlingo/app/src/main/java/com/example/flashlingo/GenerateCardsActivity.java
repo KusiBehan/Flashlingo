@@ -28,7 +28,7 @@ public class GenerateCardsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_generate_cards);
-        HashMap<String, ArrayList<Card>> lernset = new HashMap<>();
+       // HashMap<String, ArrayList<Card>> lernset = new HashMap<>();
         String LernsetName = getIntent().getStringExtra("lernsetName");
         Button createCardsBtn = findViewById(R.id.addBtn);
         Button doneBtn = findViewById(R.id.DoneBtn);
@@ -43,14 +43,16 @@ public class GenerateCardsActivity extends AppCompatActivity {
                 String definition = definitionEdt.getText().toString();
                 Card card = new Card(begriff, definition);
                 cardList.add(card);
+
+                begriffEdt.setText("");
+                definitionEdt.setText("");
             }
         });
 
         doneBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lernset.put(LernsetName,cardList);
-                Lernset.getInstance().setLernset(lernset);
+                Lernset.getInstance().setLernsetValues(LernsetName,cardList);
                 Intent mainMenu = new Intent(GenerateCardsActivity.this, MainActivity.class);
                 startActivity(mainMenu);
             }

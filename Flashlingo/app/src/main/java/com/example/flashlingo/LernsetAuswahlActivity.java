@@ -21,6 +21,7 @@ import java.util.List;
 
 public class LernsetAuswahlActivity extends AppCompatActivity {
 
+    /** @noinspection checkstyle:WhitespaceAfter*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

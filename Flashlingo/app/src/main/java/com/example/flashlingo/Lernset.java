@@ -9,7 +9,7 @@ public class Lernset {
 
     private static Lernset instance;
 
-    HashMap<String, ArrayList<Card>> lernset;
+   private HashMap<String, ArrayList<Card>> lernset;
 
     public HashMap<String, ArrayList<Card>> getLernset() {
         return lernset;
@@ -17,6 +17,10 @@ public class Lernset {
 
     public void setLernset(HashMap<String, ArrayList<Card>> lernset) {
         this.lernset = lernset;
+    }
+
+    public void setLernsetValues(String lernsetname, ArrayList<Card> cardList){
+        this.lernset.put(lernsetname,cardList);
     }
 
     private Lernset() {

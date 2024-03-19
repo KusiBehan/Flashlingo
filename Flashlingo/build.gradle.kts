@@ -3,3 +3,11 @@ plugins {
     alias(libs.plugins.androidApplication) apply false
 }
 
+tasks.withType<Checkstyle>().configureEach {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+    classpath = files()
+}
+
