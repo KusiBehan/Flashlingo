@@ -7,11 +7,9 @@ import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.View;
@@ -20,7 +18,6 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,16 +28,12 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class LearningActivity extends AppCompatActivity implements SensorEventListener {
 
-    private SensorManager sensorMgr;
+    private SensorManager sensorManager;
     private Sensor accelerometer;
 
     private static final float SHAKE_THRESHOLD = 8.0f;
@@ -50,16 +43,15 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
 
     private long lastShakeTime = 0;
 
-
     Integer falseCounter = 0;
     Float falsePercentage;
-    Float rightPercantage;
+    Float rightPercentage;
 
     public void calculateResult(ArrayList<Card> cards) {
         Integer cardSize = cards.size();
         Float cardSizePercentage = 100F;
         falsePercentage = (cardSizePercentage / cardSize * falseCounter);
-        rightPercantage = 100F - falsePercentage;
+        rightPercentage = 100F - falsePercentage;
     }
 
     private void saveCardList(ArrayList<Card> cardList) {
@@ -75,8 +67,7 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
         SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString("cardList", null);
-        Type type = new TypeToken<ArrayList<Card>>() {
-        }.getType();
+        Type type = new TypeToken<ArrayList<Card>>() {}.getType();
         return gson.fromJson(json, type);
     }
 
@@ -86,97 +77,97 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_learning);
 
-        sensorMgr = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        Sensor accelerometer = sensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (accelerometer != null) {
-            sensorMgr.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
         }
 
         Intent intent = getIntent();
-        ArrayList<Card> cardlist = (ArrayList<Card>) intent.getSerializableExtra("learnsetCards");
-        saveCardList(cardlist);
+        ArrayList<Card> cardList = (ArrayList<Card>) intent.getSerializableExtra("learnsetCards");
+        saveCardList(cardList);
         ArrayList<Card> loadedCardList = loadCardList();
 
         if (loadedCardList != null) {
-            cardlist = loadedCardList;
+            cardList = loadedCardList;
         }
 
-        TextView card = findViewById(R.id.CardText);
-        Button falseBtn = findViewById(R.id.FalseBtn);
-        Button rightBtn = findViewById(R.id.RightBtn);
+        TextView cardTextView = findViewById(R.id.CardText);
+        Button falseButton = findViewById(R.id.FalseBtn);
+        Button rightButton = findViewById(R.id.RightBtn);
 
         Vibrator vibrator;
         int[] currentIndex = {0};
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        ArrayList<Card> finalCardlist = cardlist;
-        falseBtn.setOnClickListener(new View.OnClickListener() {
+        ArrayList<Card> finalCardList = cardList;
+        falseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!card.getText().toString().isEmpty() && !(falseCounter > finalCardlist.size())) {
+                if (!cardTextView.getText().toString().isEmpty() && !(falseCounter > finalCardList.size())) {
                     falseCounter++;
                 }
                 currentIndex[0]++;
-                if (currentIndex[0] < finalCardlist.size()) {
-                    Card nextCard = finalCardlist.get(currentIndex[0]);
-                    card.setText(nextCard.cardWord);
+                if (currentIndex[0] < finalCardList.size()) {
+                    Card nextCard = finalCardList.get(currentIndex[0]);
+                    cardTextView.setText(nextCard.cardWord);
                 } else {
                     if (Build.VERSION.SDK_INT >= 26) {
                         vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
                     } else {
                         vibrator.vibrate(500);
                     }
-                    calculateResult(finalCardlist);
+                    calculateResult(finalCardList);
                     dialog.show();
-                    TextView dialogText = (TextView) dialog.findViewById(R.id.ResultTextView);
-                    if (falsePercentage > rightPercantage) {
-                        dialogText.setText("Ich würde nochmals lernen " + falsePercentage.toString() + "% der Karten sind falsch");
+                    TextView dialogText = dialog.findViewById(R.id.ResultTextView);
+                    if (falsePercentage > rightPercentage) {
+                        dialogText.setText("I would study again " + falsePercentage.toString() + "% of the cards are wrong");
                     } else {
-                        dialogText.setText("Nicht schlecht nur " + falsePercentage.toString() + "% der Karten sind falsch");
+                        dialogText.setText("Not bad only " + falsePercentage.toString() + "% of the cards are wrong");
                     }
                 }
             }
         });
 
-        ArrayList<Card> finalCardlist1 = cardlist;
-        rightBtn.setOnClickListener(new View.OnClickListener() {
+        ArrayList<Card> finalCardList1 = cardList;
+        rightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 currentIndex[0]++;
-                if (currentIndex[0] < finalCardlist1.size()) {
-                    Card nextCard = finalCardlist1.get(currentIndex[0]);
-                    card.setText(nextCard.cardWord);
+                if (currentIndex[0] < finalCardList1.size()) {
+                    Card nextCard = finalCardList1.get(currentIndex[0]);
+                    cardTextView.setText(nextCard.cardWord);
                 } else {
                     if (Build.VERSION.SDK_INT >= 26) {
                         vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
                     } else {
                         vibrator.vibrate(500);
                     }
-                    calculateResult(finalCardlist1);
-                    TextView dialogText = (TextView) dialog.findViewById(R.id.ResultTextView);
-                    if (falsePercentage > rightPercantage) {
-                        dialogText.setText("Ich würde nochmals lernen " + falsePercentage.toString() + " der Karten sind falsch");
+                    calculateResult(finalCardList1);
+                    TextView dialogText = dialog.findViewById(R.id.ResultTextView);
+                    if (falsePercentage > rightPercentage) {
+                        dialogText.setText("I would study again " + falsePercentage.toString() + " of the cards are wrong");
                     } else {
-                        dialogText.setText("Nicht schlecht nur " + falsePercentage.toString() + " der Karten sind falsch");
+                        dialogText.setText("Not bad only " + falsePercentage.toString() + " of the cards are wrong");
                     }
                     dialog.show();
                 }
             }
         });
 
-        for (Card cardElem : cardlist) {
+        for (Card cardElem : cardList) {
 
-            card.setText(cardElem.cardWord);
+            cardTextView.setText(cardElem.cardWord);
 
-            card.setOnClickListener(new View.OnClickListener() {
+            cardTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (card.getText().toString().equals(cardElem.cardWord)) {
-                        card.setText(cardElem.cardDefinition);
+                    if (cardTextView.getText().toString().equals(cardElem.cardWord)) {
+                        cardTextView.setText(cardElem.cardDefinition);
                     } else {
-                        card.setText(cardElem.cardWord);
+                        cardTextView.setText(cardElem.cardWord);
                     }
                 }
             });
@@ -185,17 +176,17 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
         dialog = new Dialog(this);
         dialog.setContentView(R.layout.layout_custom_dialog);
 
-        Button Okay = dialog.findViewById(R.id.btn_okay);
-        Button Cancel = dialog.findViewById(R.id.btn_cancel);
+        Button okayButton = dialog.findViewById(R.id.btn_okay);
+        Button cancelButton = dialog.findViewById(R.id.btn_cancel);
 
-        Okay.setOnClickListener(new View.OnClickListener() {
+        okayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
             }
         });
 
-        Cancel.setOnClickListener(new View.OnClickListener() {
+        cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
@@ -216,14 +207,14 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
     protected void onResume() {
         super.onResume();
         if (accelerometer != null) {
-            sensorMgr.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        sensorMgr.unregisterListener(this);
+        sensorManager.unregisterListener(this);
     }
 
     @Override
@@ -244,27 +235,26 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            TextView cardText = findViewById(R.id.CardText);
-                            animateTextViewToLeft(cardText);
-                            Button falseBtn = findViewById(R.id.FalseBtn);
-                            falseBtn.performClick();
+                            TextView cardTextView = findViewById(R.id.CardText);
+                            animateTextViewToLeft(cardTextView);
+                            Button falseButton = findViewById(R.id.FalseBtn);
+                            falseButton.performClick();
                         }
                     });
                 } else if (x < -4.0f) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            TextView cardText = findViewById(R.id.CardText);
-                            animateTextViewToRight(cardText);
-                            Button rightBtn = findViewById(R.id.RightBtn);
-                            rightBtn.performClick();
+                            TextView cardTextView = findViewById(R.id.CardText);
+                            animateTextViewToRight(cardTextView);
+                            Button rightButton = findViewById(R.id.RightBtn);
+                            rightButton.performClick();
                         }
                     });
                 }
             }
         }
     }
-
 
     private void animateTextViewToLeft(final TextView textView) {
         final int originalTranslationX = 0; // Store the original translationX value
@@ -290,7 +280,6 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
         textView.startAnimation(animation);
     }
 
-
     private void animateTextViewToRight(final TextView textView) {
         final int originalTranslationX = 0; // Store the original translationX value
 
@@ -314,8 +303,6 @@ public class LearningActivity extends AppCompatActivity implements SensorEventLi
         });
         textView.startAnimation(animation);
     }
-
-
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {

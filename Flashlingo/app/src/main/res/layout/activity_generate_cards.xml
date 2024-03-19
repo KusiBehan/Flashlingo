@@ -28,7 +28,7 @@
                 android:text="Begriff" />
 
             <EditText
-                android:id="@+id/begriffEditText"
+                android:id="@+id/termEditText"
                 android:layout_width="match_parent"
                 android:layout_height="61dp"
                 android:ems="10"

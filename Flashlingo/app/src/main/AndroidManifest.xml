@@ -18,7 +18,7 @@
             android:name=".LearningActivity"
             android:exported="false" />
         <activity
-            android:name=".LernsetAuswahlActivity"
+            android:name=".LearnsetSelectionActivity"
             android:exported="false" />
         <activity
             android:name=".GenerateCardsActivity"

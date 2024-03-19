@@ -1,7 +1,6 @@
 package com.example.flashlingo;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,13 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.gson.Gson;
-
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class GenerateCardsActivity extends AppCompatActivity {
 
@@ -28,36 +21,31 @@ public class GenerateCardsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_generate_cards);
-       // HashMap<String, ArrayList<Card>> lernset = new HashMap<>();
-        String LernsetName = getIntent().getStringExtra("lernsetName");
+        String learnSetName = getIntent().getStringExtra("learnSetName");
         Button createCardsBtn = findViewById(R.id.addBtn);
         Button doneBtn = findViewById(R.id.DoneBtn);
         ArrayList<Card> cardList = new ArrayList<>();
-
         createCardsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText begriffEdt = findViewById(R.id.begriffEditText);
-                EditText definitionEdt = findViewById(R.id.definitionEditText);
-                String begriff = begriffEdt.getText().toString();
-                String definition = definitionEdt.getText().toString();
-                Card card = new Card(begriff, definition);
+                EditText termEditText = findViewById(R.id.termEditText);
+                EditText definitionEditText = findViewById(R.id.definitionEditText);
+                String term = termEditText.getText().toString();
+                String definition = definitionEditText.getText().toString();
+                Card card = new Card(term, definition);
                 cardList.add(card);
-
-                begriffEdt.setText("");
-                definitionEdt.setText("");
+                termEditText.setText("");
+                definitionEditText.setText("");
             }
         });
-
         doneBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Lernset.getInstance().setLernsetValues(LernsetName,cardList);
-                Intent mainMenu = new Intent(GenerateCardsActivity.this, MainActivity.class);
-                startActivity(mainMenu);
+                Learnset.getInstance().setLearnsetValues(learnSetName, cardList);
+                Intent mainMenuIntent = new Intent(GenerateCardsActivity.this, MainActivity.class);
+                startActivity(mainMenuIntent);
             }
         });
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

@@ -12,38 +12,34 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.gson.Gson;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
-public class LernsetAuswahlActivity extends AppCompatActivity {
+public class LearnsetSelectionActivity extends AppCompatActivity {
 
-    /** @noinspection checkstyle:WhitespaceAfter*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_lernset_auswahl);
-        LinearLayout ll = (LinearLayout) findViewById(R.id.BtnLayout);
+        setContentView(R.layout.activity_learnset_selection);
+        LinearLayout buttonLayout = findViewById(R.id.BtnLayout);
 
-        HashMap<String, ArrayList<Card>> lernset = Lernset.getInstance().getLernset();
+        HashMap<String, ArrayList<Card>> learnset = Learnset.getInstance().getLearnset();
 
-        lernset.forEach((key,value) -> {
+        learnset.forEach((key, value) -> {
             Button button = new Button(this);
             button.setText(key);
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent learningIntent = new Intent(LernsetAuswahlActivity.this,LearningActivity.class);
+                    Intent learningIntent = new Intent(LearnsetSelectionActivity.this, LearningActivity.class);
                     learningIntent.putExtra("learnsetName", key);
                     learningIntent.putExtra("learnsetCards", (Serializable) value);
                     startActivity(learningIntent);
                 }
             });
-            ll.addView(button);
+            buttonLayout.addView(button);
         });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

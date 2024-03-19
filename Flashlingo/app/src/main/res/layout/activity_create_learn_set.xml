@@ -30,7 +30,7 @@
                 android:text="NAME DES LERNSETS" />
 
             <EditText
-                android:id="@+id/lernSetEditText"
+                android:id="@+id/learnSetEditText"
                 android:layout_width="242dp"
                 android:layout_height="61dp"
                 android:layout_weight="1"
